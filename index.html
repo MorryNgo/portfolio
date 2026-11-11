@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Cá Nhân | Sunset Gradient</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* --- BIẾN TOÀN CỤC: Bảng màu Gradient Cam-Đỏ-Tím --- */
+    :root {
+      --bg-color: #080a10; /* Nền tối sâu */
+      --text-color: #f8fafc;
+      --card-bg: rgba(20, 25, 40, 0.75);
+      --navbar-bg: rgba(8, 10, 16, 0.9);
+      
+      /* Gradient chính: Orange -> Red -> Purple */
+      --primary-gradient: linear-gradient(135deg, #ff9f43, #ee5253, #a55eea);
+      
+      --color-orange: #ff9f43;
+      --color-red: #ee5253;
+      --color-purple: #a55eea;
+      
+      --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+      --ease: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      overflow-x: hidden;
+      line-height: 1.6;
+      cursor: default;
+    }
+
+    a, button, .hover-target {
+      cursor: pointer;
+    }
+
+    /* --- CON TRỎ CHUỘT TÙY CHỈNH --- */
+    .cursor-dot, .cursor-outline {
+      position: fixed;
+      top: -100px;
+      left: -100px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      display: block;
+    }
+
+    .cursor-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--primary-gradient);
+      box-shadow: 0 0 12px var(--color-red);
+    }
+
+    .cursor-outline {
+      width: 45px;
+      height: 45px;
+      border: 2px solid var(--color-orange);
+      opacity: 0.6;
+      transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .cursor-hover {
+      width: 70px;
+      height: 70px;
+      border-color: var(--color-purple);
+      background: rgba(165, 94, 234, 0.15);
+    }
+
+    .trail-particle {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: var(--primary-gradient);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      animation: fade-out 0.6s forwards linear;
+    }
+
+    @keyframes fade-out {
+      0% { opacity: 0.8; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0); }
+    }
+
+    /* --- NAVBAR --- */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 10%;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      background: var(--navbar-bg);
+      backdrop-filter: blur(15px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .logo {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .logo span {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2.5rem;
+    }
+
+    .nav-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.3s;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-color);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -5px;
+      left: 0;
+      background: var(--primary-gradient);
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    /* --- SECTION CHUNG --- */
+    section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 8rem 10% 4rem 10%;
+      text-align: center;
+      position: relative;
+    }
+
+    .section-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -1.5px;
+    }
+
+    /* --- HERO SECTION & DISCORD AVATAR --- */
+    .hero-section {
+      background: radial-gradient(circle at center, #1a1e29 0%, var(--bg-color) 100%);
+    }
+
+    .discord-avatar-container {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 2rem auto;
+    }
+
+    /* CẤU HÌNH KHUNG CHUẨN DISCORD: Cắt hình bo tròn tuyệt đối */
+    .discord-avatar-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      padding: 4px; /* Độ dày viền Nitro Gradient */
+      background: var(--primary-gradient);
+      box-shadow: 0 0 25px rgba(238, 82, 83, 0.4);
+      transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+      overflow: hidden; /* Cắt ảnh dư thừa ra khỏi khung tròn */
+    }
+
+    .discord-avatar-wrapper:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 35px rgba(165, 94, 234, 0.7);
+    }
+
+    .discord-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Giữ tỷ lệ ảnh chuẩn không bị méo */
+      object-position: center;
+      border-radius: 50%;
+      background-color: #1e1f22;
+      display: block;
+    }
+
+    /* Badge trạng thái Online chuẩn Discord */
+    .discord-status-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      width: 28px;
+      height: 28px;
+      background-color: #23a55a;
+      border: 4px solid #080a10;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .hero-section h1 {
+      font-size: 3.8rem;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .hero-section .subtitle {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .hero-bg-blur {
+      position: absolute;
+      width: 45vw;
+      height: 45vw;
+      background: var(--primary-gradient);
+      border-radius: 50%;
+      filter: blur(160px);
+      opacity: 0.15;
+      z-index: -1;
+    }
+
+    /* --- TEXT & BUTTONS --- */
+    .text-gradient {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 2.5rem;
+      padding: 1rem 2.5rem;
+      background: var(--primary-gradient);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 10px 20px rgba(238, 82, 83, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(238, 82, 83, 0.5);
+    }
+
+    /* --- CARD & GRID --- */
+    .card {
+      background: var(--card-bg);
+      padding: 3.5rem;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      max-width: 900px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow-lg);
+      transition: transform 0.4s var(--ease), border-color 0.4s, box-shadow 0.4s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.01);
+      border-color: rgba(238, 82, 83, 0.4);
+      box-shadow: 0 20px 40px rgba(238, 82, 83, 0.2);
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      width: 100%;
+      margin-top: 3.5rem;
+    }
+
+    .skill-card {
+      background: var(--card-bg);
+      padding: 2.5rem 1.8rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      box-shadow: var(--shadow-lg);
+      transition: all 0.4s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--primary-gradient);
+      transform: scaleX(0);
+      transition: transform 0.4s var(--ease);
+    }
+
+    .skill-card:hover {
+      transform: translateY(-12px);
+      background: rgba(20, 25, 40, 0.9);
+      border-color: rgba(255, 159, 67, 0.3);
+    }
+
+    .skill-card:hover::after {
+      transform: scaleX(1);
+    }
+
+    .skill-icon {
+      font-size: 2.8rem;
+      margin-bottom: 1.2rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .project-list {
+      list-style: none;
+      text-align: left;
+      margin-top: 1.5rem;
+      max-width: 750px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .project-list li {
+      margin-bottom: 1.2rem;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .list-icon {
+      margin-right: 1rem;
+      margin-top: 0.3rem;
+      color: var(--color-red);
+    }
+
+    /* --- CONTACT SECTION --- */
+    .contact-section {
+      padding-bottom: 8rem;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .social-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #cbd5e1;
+      font-size: 1.6rem;
+      text-decoration: none;
+      transition: all 0.4s var(--ease);
+    }
+
+    .social-icon:hover {
+      background: var(--primary-gradient);
+      color: #fff;
+      transform: translateY(-8px) rotate(5deg);
+      box-shadow: 0 10px 25px rgba(165, 94, 234, 0.4);
+      border-color: transparent;
+    }
+
+    /* --- ANIMATIONS --- */
+    .fade-in { animation: fadeIn 1s var(--ease) forwards; }
+    .fade-in-delay { animation: fadeIn 1s var(--ease) 0.4s forwards; opacity: 0; }
+    .fade-up { animation: fadeUp 1s var(--ease) forwards; opacity: 0; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .skill-card.fade-up, .card.fade-up, .section-title.fade-up {
+      animation-fill-mode: forwards;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Con trỏ chuột tùy chỉnh -->
+  <div class="cursor-dot"></div>
+  <div class="cursor-outline"></div>
+
+  <!-- Thanh điều hướng -->
+  <nav class="navbar">
+    <div class="logo">Portfolio<span>.</span></div>
+    <ul class="nav-links">
+      <li><a href="#hero" class="hover-target">Trang chủ</a></li>
+      <li><a href="#about" class="hover-target">Về tôi</a></li>
+      <li><a href="#skills" class="hover-target">Kỹ năng</a></li>
+      <li><a href="#future" class="hover-target">Định hướng</a></li>
+      <li><a href="#contact" class="hover-target">Liên hệ</a></li>
+    </ul>
+  </nav>
+
+  <!-- Phần Hero -->
+  <section id="hero" class="hero-section">
+    <div class="hero-content">
+      <!-- Khung Avatar Discord Chrollo Lucilfer -->
+      <div class="discord-avatar-container hover-target">
+        <div class="discord-avatar-wrapper">
+          <img src="https://i.pinimg.com/474x/c7/d5/1b/c7d51b69e121c9b9dc17628c1ab5651b.jpg" alt="Chrollo Lucilfer" class="discord-avatar-img">
+        </div>
+        <div class="discord-status-badge" title="Online"></div>
+      </div>
+
+      <h1 class="fade-in">Xin chào, tôi là <br><span class="text-gradient">Học sinh Chuyên Bến Tre</span></h1>
+      <p class="fade-in-delay subtitle">Đam mê Kỹ thuật Tự động hóa | Hardware/Software | Digital Media</p>
+      <a href="#about" class="btn hover-target">Khám phá ngay</a>
+    </div>
+    <div class="hero-bg-blur"></div>
+  </section>
+
+  <!-- Phần Về tôi -->
+  <section id="about" class="about-section">
+    <div class="card hover-target fade-up">
+      <h2 class="section-title text-gradient">Giới Thiệu Bản Thân</h2>
+      <p>
+        Hiện tại, tôi là học sinh tại <strong>Trường THPT Chuyên Bến Tre</strong>. Với niềm đam mê lớn dành cho công nghệ và kỹ thuật, tôi định hướng phát triển trong lĩnh vực <strong>Kỹ thuật Tự động hóa & Hệ thống Thông minh (UAV, Robotics, IoT)</strong>. Tôi thích khám phá sự kết hợp giữa phần cứng vi điều khiển, phần mềm lập trình và tư duy toán học/vật lý chuyên sâu.
+      </p>
+    </div>
+  </section>
+
+  <!-- Phần Kỹ năng -->
+  <section id="skills" class="skills-section">
+    <h2 class="section-title text-gradient fade-up">Kỹ Năng & Công Nghệ</h2>
+    <div class="skills-grid">
+      <div class="skill-card hover-target fade-up">
+        <i class="fa-solid fa-microchip skill-icon"></i>
+        <h3>Hardware & Vi điều khiển</h3>
+        <p>Arduino Uno, cảm biến, mạch điện tử, giao tiếp nối tiếp Serial & nhúng hệ thống cơ bản</p>
+      </div>
+      <div class="skill-card hover-target fade-up">
+        <i class="fa-solid fa-code skill-icon"></i>
+        <h3>Lập trình & Web</h3>
+        <p>HTML5, CSS3 (Flexbox, Responsive design), JavaScript, Python (PySerial, OpenCV), C/C++</p>
+      </div>
+      <div class="skill-card hover-target fade-up">
+        <i class="fa-solid fa-photo-film skill-icon"></i>
+        <h3>Digital Media</h3>
+        <p>Adobe Photoshop CC, Premiere Pro (Chỉnh màu, Keyframe), After Effects</p>
+      </div>
+      <div class="skill-card hover-target fade-up">
+        <i class="fa-solid fa-square-root-variable skill-icon"></i>
+        <h3>Toán & Khoa Học</h3>
+        <p>Tư duy Logic toán học (Hình học phẳng Olympiad, Đại số), Vật lý cơ học & Tối ưu hóa</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Phần Định hướng -->
+  <section id="future" class="projects-section">
+    <div class="card hover-target fade-up">
+      <h2 class="section-title text-gradient">Lĩnh Vực Quan Tâm & Định Hướng</h2>
+      <ul class="project-list">
+        <li><i class="fa-solid fa-robot list-icon"></i> <span><strong>Hệ thống Tự động hóa & Robotics:</strong> Nghiên cứu điều khiển tự động và xử lý ảnh tích hợp vi điều khiển.</span></li>
+        <li><i class="fa-solid fa-laptop-code list-icon"></i> <span><strong>Thiết kế & Phát triển Web:</strong> Xây dựng giao diện mượt mà, tối ưu trải nghiệm người dùng.</span></li>
+        <li><i class="fa-solid fa-graduation-cap list-icon"></i> <span><strong>Mục tiêu học tập:</strong> Theo học chuyên ngành Điều khiển & Tự động hóa tại các trường Đại học Kỹ thuật hàng đầu.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Phần Liên hệ -->
+  <section id="contact" class="contact-section">
+    <h2 class="section-title text-gradient fade-up">Kết Nối Với Tôi</h2>
+    <div class="social-links fade-up">
+      <a href="#" class="social-icon hover-target" title="GitHub"><i class="fa-brands fa-github"></i></a>
+      <a href="#" class="social-icon hover-target" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+      <a href="#" class="social-icon hover-target" title="Email"><i class="fa-solid fa-envelope"></i></a>
+    </div>
+  </section>
+
+  <!-- JAVASCRIPT XỬ LÝ CON TRỎ CHUỘT -->
+  <script>
+    const cursorDot = document.querySelector('.cursor-dot');
+    const cursorOutline = document.querySelector('.cursor-outline');
+    const hoverTargets = document.querySelectorAll('.hover-target, a, button, .card, .skill-card');
+
+    window.addEventListener('mousemove', (e) => {
+      const posX = e.clientX;
+      const posY = e.clientY;
+
+      cursorDot.style.left = `${posX}px`;
+      cursorDot.style.top = `${posY}px`;
+
+      cursorOutline.animate({
+        left: `${posX}px`,
+        top: `${posY}px`
+      }, { duration: 350, fill: "forwards" });
+
+      createTrailParticle(posX, posY);
+    });
+
+    function createTrailParticle(x, y) {
+      const particle = document.createElement('div');
+      particle.className = 'trail-particle';
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
+      
+      document.body.appendChild(particle);
+
+      setTimeout(() => {
+        particle.remove();
+      }, 600);
+    }
+
+    hoverTargets.forEach(target => {
+      target.addEventListener('mouseenter', () => {
+        cursorOutline.classList.add('cursor-hover');
+      });
+      target.addEventListener('mouseleave', () => {
+        cursorOutline.classList.remove('cursor-hover');
+      });
+    });
+  </script>
+</body>
+</html>
