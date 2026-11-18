@@ -32,6 +32,10 @@
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background-color: var(--bg-color);
@@ -93,6 +97,13 @@
     @keyframes fade-out {
       0% { opacity: 0.8; transform: scale(1); }
       100% { opacity: 0; transform: scale(0); }
+    }
+
+    /* Ẩn custom cursor trên thiết bị cảm ứng / màn hình nhỏ */
+    @media (hover: none), (pointer: coarse) {
+      .cursor-dot, .cursor-outline, .trail-particle {
+        display: none !important;
+      }
     }
 
     /* --- NAVBAR --- */
@@ -209,7 +220,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover; /* Giữ tỷ lệ ảnh chuẩn không bị méo */
-      object-position: center;
+      object-position: center 20%;
       border-radius: 50%;
       background-color: #1e1f22;
       display: block;
@@ -299,7 +310,7 @@
 
     .skills-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 2rem;
       width: 100%;
       margin-top: 3.5rem;
@@ -377,6 +388,8 @@
       display: flex;
       gap: 2rem;
       margin-top: 3rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .social-icon {
@@ -405,20 +418,76 @@
     /* --- ANIMATIONS --- */
     .fade-in { animation: fadeIn 1s var(--ease) forwards; }
     .fade-in-delay { animation: fadeIn 1s var(--ease) 0.4s forwards; opacity: 0; }
-    .fade-up { animation: fadeUp 1s var(--ease) forwards; opacity: 0; }
+    
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    /* --- RESPONSIVE CHO ĐIỆN THOẠI & TABLET --- */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 1rem 5%;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
 
-    .skill-card.fade-up, .card.fade-up, .section-title.fade-up {
-      animation-fill-mode: forwards;
+      .logo {
+        font-size: 1.6rem;
+      }
+
+      .nav-links {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-links a {
+        font-size: 0.85rem;
+      }
+
+      section {
+        padding: 7.5rem 5% 3rem 5%;
+      }
+
+      .hero-section h1 {
+        font-size: 2.3rem;
+      }
+
+      .hero-section .subtitle {
+        font-size: 1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 2rem 1.5rem;
+      }
+
+      .discord-avatar-container {
+        width: 120px;
+        height: 120px;
+      }
+
+      .discord-status-badge {
+        width: 24px;
+        height: 24px;
+        bottom: 4px;
+        right: 4px;
+      }
     }
   </style>
 </head>
@@ -511,53 +580,80 @@
   <section id="contact" class="contact-section">
     <h2 class="section-title text-gradient fade-up">Kết Nối Với Tôi</h2>
     <div class="social-links fade-up">
-      <a href="https://github.com/MorryNgo" target="_blank" class="social-icon hover-target" title="GitHub"><i class="fa-brands fa-github"></i></a>
-      <a href="https://facebook.com/morryngo" class="social-icon hover-target" title="Facebook" target="_blank" ><i class="fa-brands fa-facebook"></i></a>
-      <a href="#" class="social-icon hover-target" title="Email"><i class="fa-solid fa-envelope"></i></a>
+      <a href="https://github.com/MorryNgo" target="_blank" rel="noopener noreferrer" class="social-icon hover-target" title="GitHub"><i class="fa-brands fa-github"></i></a>
+      <a href="https://facebook.com/morryngo" target="_blank" rel="noopener noreferrer" class="social-icon hover-target" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+      <a href="mailto:contact@example.com" class="social-icon hover-target" title="Email"><i class="fa-solid fa-envelope"></i></a>
     </div>
   </section>
 
-  <!-- JAVASCRIPT XỬ LÝ CON TRỎ CHUỘT -->
+  <!-- JAVASCRIPT XỬ LÝ CON TRỎ CHUỘT & HIỆU ỨNG CUỘN -->
   <script>
     const cursorDot = document.querySelector('.cursor-dot');
     const cursorOutline = document.querySelector('.cursor-outline');
     const hoverTargets = document.querySelectorAll('.hover-target, a, button, .card, .skill-card');
+    const isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
-    window.addEventListener('mousemove', (e) => {
-      const posX = e.clientX;
-      const posY = e.clientY;
+    if (!isTouchDevice) {
+      let lastParticleTime = 0;
 
-      cursorDot.style.left = `${posX}px`;
-      cursorDot.style.top = `${posY}px`;
+      window.addEventListener('mousemove', (e) => {
+        const posX = e.clientX;
+        const posY = e.clientY;
 
-      cursorOutline.animate({
-        left: `${posX}px`,
-        top: `${posY}px`
-      }, { duration: 350, fill: "forwards" });
+        cursorDot.style.left = `${posX}px`;
+        cursorDot.style.top = `${posY}px`;
 
-      createTrailParticle(posX, posY);
-    });
+        cursorOutline.animate({
+          left: `${posX}px`,
+          top: `${posY}px`
+        }, { duration: 350, fill: "forwards" });
 
-    function createTrailParticle(x, y) {
-      const particle = document.createElement('div');
-      particle.className = 'trail-particle';
-      particle.style.left = `${x}px`;
-      particle.style.top = `${y}px`;
-      
-      document.body.appendChild(particle);
+        const now = Date.now();
+        if (now - lastParticleTime > 25) {
+          createTrailParticle(posX, posY);
+          lastParticleTime = now;
+        }
+      });
 
-      setTimeout(() => {
-        particle.remove();
-      }, 600);
+      function createTrailParticle(x, y) {
+        const particle = document.createElement('div');
+        particle.className = 'trail-particle';
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        
+        document.body.appendChild(particle);
+
+        setTimeout(() => {
+          particle.remove();
+        }, 600);
+      }
+
+      hoverTargets.forEach(target => {
+        target.addEventListener('mouseenter', () => {
+          cursorOutline.classList.add('cursor-hover');
+        });
+        target.addEventListener('mouseleave', () => {
+          cursorOutline.classList.remove('cursor-hover');
+        });
+      });
     }
 
-    hoverTargets.forEach(target => {
-      target.addEventListener('mouseenter', () => {
-        cursorOutline.classList.add('cursor-hover');
+    const observerOptions = {
+      threshold: 0.15,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const scrollObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
       });
-      target.addEventListener('mouseleave', () => {
-        cursorOutline.classList.remove('cursor-hover');
-      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-up').forEach(el => {
+      scrollObserver.observe(el);
     });
   </script>
 </body>
